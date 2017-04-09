@@ -1,22 +1,23 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'search_object/plugin/graphql/version'
+require 'English'
+require 'search_object/plugin/graph_ql/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "search_object_graphql"
+  spec.name          = 'search_object_graphql'
   spec.version       = SearchObject::Plugin::GraphQL::VERSION
-  spec.authors       = ["Radoslav Stankov"]
-  spec.email         = ["rstankov@gmail.com"]
-  spec.description   = %q{Search Object plugin to working with GraphQL}
-  spec.summary       = %q{Maps search objects to GraphQL resolvers}
-  spec.homepage      = "https://github.com/RStankov/SearchObjectGraphQL"
-  spec.license       = "MIT"
+  spec.authors       = ['Radoslav Stankov']
+  spec.email         = ['rstankov@gmail.com']
+  spec.description   = 'Search Object plugin to working with GraphQL'
+  spec.summary       = 'Maps search objects to GraphQL resolvers'
+  spec.homepage      = 'https://github.com/RStankov/SearchObjectGraphQL'
+  spec.license       = 'MIT'
 
-  spec.files         = `git ls-files`.split($/)
+  spec.files         = `git ls-files`.split($RS)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
   spec.add_dependency 'search_object', '~> 1.1'
   spec.add_dependency 'graphql', '~> 1.5'
