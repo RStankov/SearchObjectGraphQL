@@ -1,0 +1,11 @@
+language: ruby
+rvm:
+  - 2.2
+  - 2.3
+script:
+  - bundle exec rubocop
+  - bundle exec rspec spec
+notifications:
+  email: false
+before_install:
+  - gem install bundler
