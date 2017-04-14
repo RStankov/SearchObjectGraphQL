@@ -2,11 +2,11 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'English'
-require 'search_object/plugin/graph_ql/version'
+require 'search_object/plugin/graphql/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'search_object_graphql'
-  spec.version       = SearchObject::Plugin::GraphQL::VERSION
+  spec.version       = SearchObject::Plugin::Graphql::VERSION
   spec.authors       = ['Radoslav Stankov']
   spec.email         = ['rstankov@gmail.com']
   spec.description   = 'Search Object plugin to working with GraphQL'

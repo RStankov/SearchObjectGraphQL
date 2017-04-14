@@ -1,6 +1,6 @@
 module SearchObject
   module Plugin
-    module GraphQL
+    module Graphql
       VERSION = '0.1'.freeze
     end
   end
