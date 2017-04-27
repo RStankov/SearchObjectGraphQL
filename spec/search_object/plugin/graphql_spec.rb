@@ -62,15 +62,7 @@ describe SearchObject::Plugin::Graphql do
     end
 
     result = execute_query_on_schema('{ posts(id: "2") { id } }') do
-      field :posts do
-        type types[PostType]
-
-        search_object.arguments.each do |(name, type)|
-          argument name, type
-        end
-
-        resolve search_object
-      end
+      SearchObject::Plugin::Graphql::Helper.add_field :posts, types[PostType], search_object, to: self
     end
 
     expect(result).to eq(
@@ -90,13 +82,7 @@ describe SearchObject::Plugin::Graphql do
     parent_type = GraphQL::ObjectType.define do
       name 'ParentType'
 
-      field :posts do
-        type types[PostType]
-        search_object.arguments.each do |(name, type)|
-          argument name, type
-        end
-        resolve search_object
-      end
+      SearchObject::Plugin::Graphql::Helper.add_field :posts, types[PostType], search_object, to: self
     end
 
     result = execute_query_on_schema('{ parent { posts(argument: "argument") { id }  } }', context: { value: 'context' }) do
@@ -123,13 +109,7 @@ describe SearchObject::Plugin::Graphql do
     parent_type = GraphQL::ObjectType.define do
       name 'ParentType'
 
-      field :posts do
-        type types[PostType]
-        search_object.arguments.each do |(name, type)|
-          argument name, type
-        end
-        resolve search_object
-      end
+      SearchObject::Plugin::Graphql::Helper.add_field :posts, types[PostType], search_object, to: self
     end
 
     result = execute_query_on_schema('{ parent { posts { id }  } }') do
@@ -148,8 +128,6 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  describe 'dsl' do
-    it 'works with connection type'
-    it 'works with array type'
-  end
+  it 'works with connection type'
+  it 'auto generates enums'
 end

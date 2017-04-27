@@ -33,7 +33,22 @@ module SearchObject
           config[:args] ||= {}
         end
       end
+
+      module Helper
+        module_function
+
+        def add_field(name, type, search_object, to:)
+          to.field name do
+            type type
+
+            search_object.arguments.each do |(argument_name, argument_type)|
+              argument argument_name, argument_type
+            end
+
+            resolve search_object
+          end
+        end
+      end
     end
   end
 end
-
