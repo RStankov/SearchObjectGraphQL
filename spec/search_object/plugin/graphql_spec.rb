@@ -58,13 +58,17 @@ describe SearchObject::Plugin::Graphql do
     search_object = define_search_class do
       scope { [Post.new('1'), Post.new('2'), Post.new('3')] }
 
-      option(:id) { |scope, value| scope.select { |p| p.id == value } }
+      option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
     end
 
     result = execute_query_on_schema('{ posts(id: "2") { id } }') do
       field :posts do
         type types[PostType]
-        argument :id, !types.ID
+
+        search_object.arguments.each do |(name, type)|
+          argument name, type
+        end
+
         resolve search_object
       end
     end
@@ -80,7 +84,7 @@ describe SearchObject::Plugin::Graphql do
     search_object = define_search_class do
       scope { [] }
 
-      option(:argument) { |_scope, value| [obj, Post.new(ctx[:value]), Post.new(value)] }
+      option(:argument, type: !types.String) { |_scope, value| [obj, Post.new(ctx[:value]), Post.new(value)] }
     end
 
     parent_type = GraphQL::ObjectType.define do
@@ -88,7 +92,9 @@ describe SearchObject::Plugin::Graphql do
 
       field :posts do
         type types[PostType]
-        argument :argument, !types.String
+        search_object.arguments.each do |(name, type)|
+          argument name, type
+        end
         resolve search_object
       end
     end
@@ -119,6 +125,9 @@ describe SearchObject::Plugin::Graphql do
 
       field :posts do
         type types[PostType]
+        search_object.arguments.each do |(name, type)|
+          argument name, type
+        end
         resolve search_object
       end
     end
