@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'graphql'
+require 'ostruct'
 require 'search_object/plugin/graphql'
 
 describe SearchObject::Plugin::Graphql do
@@ -108,7 +109,35 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  it 'can use obj for getting a scope'
+  it 'can use obj for getting a scope' do
+    search_object = define_search_class do
+      scope { obj.posts }
+    end
+
+    parent_type = GraphQL::ObjectType.define do
+      name 'ParentType'
+
+      field :posts do
+        type types[PostType]
+        resolve search_object
+      end
+    end
+
+    result = execute_query_on_schema('{ parent { posts { id }  } }') do
+      field :parent do
+        type parent_type
+        resolve ->(_obj, _args, _ctx) { OpenStruct.new posts: [Post.new('id')] }
+      end
+    end
+
+    expect(result).to eq(
+      'data' => {
+        'parent' => {
+          'posts' => [Post.new('id').to_json]
+        }
+      }
+    )
+  end
 
   describe 'dsl' do
     it 'works with connection type'
