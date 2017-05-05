@@ -2,6 +2,7 @@ module SearchObject
   module Plugin
     module Graphql
       def self.included(base)
+        base.include SearchObject::Plugin::Enum
         base.extend ClassMethods
       end
 
@@ -15,11 +16,13 @@ module SearchObject
       end
 
       module ClassMethods
-        def option(name, options = nil, &block)
+        def option(name, options = {}, &block)
           argument = Helper.build_argument(name, options)
           arguments[argument.name] = argument
 
-          super
+          options[:enum] = argument.type.values.keys if argument.type.is_a? GraphQL::EnumType
+
+          super(name, options, &block)
         end
 
         def types

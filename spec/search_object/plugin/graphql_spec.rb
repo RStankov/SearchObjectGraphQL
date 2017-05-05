@@ -106,14 +106,12 @@ describe SearchObject::Plugin::Graphql do
   it 'can use object for getting a scope' do
     search_object = define_search_class do
       scope { object.posts }
-
-      type types[PostType]
     end
 
     parent_type = GraphQL::ObjectType.define do
       name 'ParentType'
 
-      field :posts, function: search_object
+      field :posts, types[PostType], function: search_object
     end
 
     result = execute_query_on_schema('{ parent { posts { id }  } }') do
@@ -132,7 +130,38 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  it 'auto generates enums'
+  it 'can use GraphQL enums' do
+    enum_type = GraphQL::EnumType.define do
+      name 'TestEnum'
+
+      value 'PRICE'
+      value 'DATE'
+    end
+
+    search_object = define_search_class do
+      scope { [] }
+
+      option(:order, type: enum_type)
+
+      define_method(:apply_order_with_price) do |_scope|
+        [Post.new('price')]
+      end
+
+      define_method(:apply_order_with_date) do |_scope|
+        [Post.new('date')]
+      end
+    end
+
+    result = execute_query_on_schema('{ posts(order: PRICE) { id } }') do
+      field :posts, types[PostType], function: search_object
+    end
+
+    expect(result).to eq(
+      'data' => {
+        'posts' => [Post.new('price').to_json]
+      }
+    )
+  end
 
   describe 'as GraphQL::Function' do
     it 'can auto define type'
