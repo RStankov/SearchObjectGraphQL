@@ -58,6 +58,7 @@ module SearchObject
         end
       end
 
+      # :api: private
       module Helper
         module_function
 
