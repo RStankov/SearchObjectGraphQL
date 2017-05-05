@@ -76,7 +76,6 @@ module SearchObject
           argument.type = options.fetch(:type) { raise MissingTypeDefinitionError, name }
           argument.default_value = options[:default] if options.key? :default
           argument.description = options[:description] if options.key? :description
-          argument.as = options[:as] if options.key? :as
           argument
         end
       end

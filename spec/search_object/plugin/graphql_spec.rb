@@ -222,8 +222,26 @@ describe SearchObject::Plugin::Graphql do
       expect { define_search_class { option :name } }.to raise_error described_class::MissingTypeDefinitionError
     end
 
-    it 'accepts default type'
-    it 'accepts as'
+    it 'accepts default type' do
+      search_object = define_search_class do
+        scope { [] }
+
+        option(:id, type: types.String, default: 'default') do |_scope, value|
+          [Post.new(value)]
+        end
+      end
+
+      result = execute_query_on_schema('{ posts { id } }') do
+        field :posts, types[PostType], function: search_object
+      end
+
+      expect(result).to eq(
+        'data' => {
+          'posts' => [Post.new('default').to_json]
+        }
+      )
+    end
+
     it 'accepts description'
   end
 end
