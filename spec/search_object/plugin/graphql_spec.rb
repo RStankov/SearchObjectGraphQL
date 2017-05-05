@@ -163,17 +163,64 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  describe 'as GraphQL::Function' do
-    it 'can auto define type'
-    it 'can set complexity'
-    it 'can set description'
-    it 'can set deprecation_reason'
+  it 'propertly can define types' do
+    search_object = define_search_class do
+      scope { [] }
 
-    describe 'argument' do
-      it 'raises when type is not given'
-      it 'accepts default type'
-      it 'accepts as'
-      it 'accepts description'
+      type do
+        name 'Test'
+
+        field :title, types.String
+      end
+
+      description 'Test description'
     end
+
+    query = <<-SQL
+      {
+        __type(name: "Query") {
+          name
+          fields {
+            name
+            deprecationReason
+            type {
+              name
+              fields {
+                name
+              }
+            }
+          }
+        }
+      }
+    SQL
+
+    result = execute_query_on_schema(query) do
+      field :posts, function: search_object
+    end
+
+    expect(result).to eq(
+      'data' => {
+        '__type' => {
+          'name' => 'Query',
+          'fields' => [{
+            'name' => 'posts',
+            'deprecationReason' => nil,
+            'type' => {
+              'name' => 'Test',
+              'fields' => [{
+                'name' => 'title'
+              }]
+            }
+          }]
+        }
+      }
+    )
+  end
+
+  describe 'argument' do
+    it 'raises when type is not given'
+    it 'accepts default type'
+    it 'accepts as'
+    it 'accepts description'
   end
 end
