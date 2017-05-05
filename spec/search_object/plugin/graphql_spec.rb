@@ -134,5 +134,17 @@ describe SearchObject::Plugin::Graphql do
 
   it 'auto generates enums'
 
-  describe 'as GraphQL::Function'
+  describe 'as GraphQL::Function' do
+    it 'can auto define type'
+    it 'can set complexity'
+    it 'can set description'
+    it 'can set deprecation_reason'
+
+    describe 'argument' do
+      it 'raises when type is not given'
+      it 'accepts default type'
+      it 'accepts as'
+      it 'accepts description'
+    end
+  end
 end

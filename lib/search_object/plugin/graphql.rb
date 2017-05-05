@@ -38,7 +38,6 @@ module SearchObject
 
         def type(value = :default, &block)
           return config[:type] if value == :default && !block_given?
-
           config[:type] = block_given? ? GraphQL::ObjectType.define(&block) : value
         end
 
