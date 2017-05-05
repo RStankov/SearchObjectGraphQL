@@ -54,15 +54,17 @@ describe SearchObject::Plugin::Graphql do
     expect(search.object).to eq :object
   end
 
-  it 'can be used as resolver' do
+  it 'can be used as function' do
     search_object = define_search_class do
       scope { [Post.new('1'), Post.new('2'), Post.new('3')] }
+
+      type types[PostType]
 
       option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
     end
 
     result = execute_query_on_schema('{ posts(id: "2") { id } }') do
-      SearchObject::Plugin::Graphql::Helper.add_field :posts, types[PostType], search_object, to: self
+      field :posts, function: search_object
     end
 
     expect(result).to eq(
@@ -82,7 +84,7 @@ describe SearchObject::Plugin::Graphql do
     parent_type = GraphQL::ObjectType.define do
       name 'ParentType'
 
-      SearchObject::Plugin::Graphql::Helper.add_field :posts, types[PostType], search_object, to: self
+      field :posts, types[PostType], function: search_object
     end
 
     result = execute_query_on_schema('{ parent { posts(argument: "argument") { id }  } }', context: { value: 'context' }) do
@@ -104,12 +106,14 @@ describe SearchObject::Plugin::Graphql do
   it 'can use object for getting a scope' do
     search_object = define_search_class do
       scope { object.posts }
+
+      type types[PostType]
     end
 
     parent_type = GraphQL::ObjectType.define do
       name 'ParentType'
 
-      SearchObject::Plugin::Graphql::Helper.add_field :posts, types[PostType], search_object, to: self
+      field :posts, function: search_object
     end
 
     result = execute_query_on_schema('{ parent { posts { id }  } }') do
@@ -128,6 +132,7 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  it 'works with connection type'
   it 'auto generates enums'
+
+  describe 'as GraphQL::Function'
 end

@@ -15,12 +15,9 @@ module SearchObject
       end
 
       module ClassMethods
-        def call(object, args, context)
-          new(filters: args.to_h, object: object, context: context).results
-        end
-
         def option(name, options = nil, &block)
-          arguments[name] = options.fetch(:type) { raise 'TODO error class' }
+          argument = Helper.build_argument(name, options)
+          arguments[argument.name] = argument
 
           super
         end
@@ -29,24 +26,49 @@ module SearchObject
           GraphQL::Define::TypeDefiner.instance
         end
 
+        # NOTE(rstankov): GraphQL::Function interface
+        # Documentation - https://rmosolgo.github.io/graphql-ruby/schema/code_reuse#functions
+        def call(object, args, context)
+          new(filters: args.to_h, object: object, context: context).results
+        end
+
         def arguments
           config[:args] ||= {}
+        end
+
+        def type(value = :default, &block)
+          return config[:type] if value == :default && !block_given?
+
+          config[:type] = block_given? ? GraphQL::ObjectType.define(&block) : value
+        end
+
+        def complexity(value = :default)
+          return config[:complexity] || 1 if value == :default
+          config[:complexity] = value
+        end
+
+        def description(value = :default)
+          return config[:description] if value == :default
+          config[:description] = value
+        end
+
+        def deprecation_reason(value = :default)
+          return config[:deprecation_reason] if value == :default
+          config[:deprecation_reason] = value
         end
       end
 
       module Helper
         module_function
 
-        def add_field(name, type, search_object, to:)
-          to.field name do
-            type type
-
-            search_object.arguments.each do |(argument_name, argument_type)|
-              argument argument_name, argument_type
-            end
-
-            resolve search_object
-          end
+        def build_argument(name, options)
+          argument = GraphQL::Argument.new
+          argument.name = name.to_s
+          argument.type = options.fetch(:type) { raise 'TODO error class' }
+          argument.default_value = options[:default] if options.key? :default
+          argument.description = options[:description] if options.key? :description
+          argument.as = options[:as] if options.key? :as
+          argument
         end
       end
     end
