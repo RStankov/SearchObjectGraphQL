@@ -60,6 +60,12 @@ module SearchObject
         end
       end
 
+      class MissingTypeDefinitionError < ArgumentError
+        def initialize(name)
+          super "GraphQL type has to passed as :type to '#{name}' option"
+        end
+      end
+
       # :api: private
       module Helper
         module_function
@@ -67,7 +73,7 @@ module SearchObject
         def build_argument(name, options)
           argument = GraphQL::Argument.new
           argument.name = name.to_s
-          argument.type = options.fetch(:type) { raise 'TODO error class' }
+          argument.type = options.fetch(:type) { raise MissingTypeDefinitionError, name }
           argument.default_value = options[:default] if options.key? :default
           argument.description = options[:description] if options.key? :description
           argument.as = options[:as] if options.key? :as
