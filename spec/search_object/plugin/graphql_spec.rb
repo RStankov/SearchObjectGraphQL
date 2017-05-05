@@ -42,16 +42,16 @@ describe SearchObject::Plugin::Graphql do
     end
   end
 
-  it 'has ctx attribute' do
-    search = define_search_class.new(ctx: :ctx)
+  it 'has context attribute' do
+    search = define_search_class.new(context: :context)
 
-    expect(search.ctx).to eq :ctx
+    expect(search.context).to eq :context
   end
 
-  it 'has obj attribute' do
-    search = define_search_class.new(obj: :obj)
+  it 'has object attribute' do
+    search = define_search_class.new(object: :object)
 
-    expect(search.obj).to eq :obj
+    expect(search.object).to eq :object
   end
 
   it 'can be used as resolver' do
@@ -76,7 +76,7 @@ describe SearchObject::Plugin::Graphql do
     search_object = define_search_class do
       scope { [] }
 
-      option(:argument, type: !types.String) { |_scope, value| [obj, Post.new(ctx[:value]), Post.new(value)] }
+      option(:argument, type: !types.String) { |_scope, value| [object, Post.new(context[:value]), Post.new(value)] }
     end
 
     parent_type = GraphQL::ObjectType.define do
@@ -101,9 +101,9 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  it 'can use obj for getting a scope' do
+  it 'can use object for getting a scope' do
     search_object = define_search_class do
-      scope { obj.posts }
+      scope { object.posts }
     end
 
     parent_type = GraphQL::ObjectType.define do

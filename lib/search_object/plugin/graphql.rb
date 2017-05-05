@@ -5,18 +5,18 @@ module SearchObject
         base.extend ClassMethods
       end
 
-      attr_reader :obj, :ctx
+      attr_reader :object, :context
 
-      def initialize(filters: {}, obj: nil, ctx: {}, scope: nil)
-        @obj = obj
-        @ctx = ctx
+      def initialize(filters: {}, object: nil, context: {}, scope: nil)
+        @object = object
+        @context = context
 
         super filters: filters, scope: scope
       end
 
       module ClassMethods
-        def call(obj, args, ctx)
-          new(filters: args.to_h, obj: obj, ctx: ctx).results
+        def call(object, args, context)
+          new(filters: args.to_h, object: object, context: context).results
         end
 
         def option(name, options = nil, &block)
