@@ -141,6 +141,8 @@ describe SearchObject::Plugin::Graphql do
       end
 
       description 'Test description'
+
+      option('option', type: types.String, description: 'text') { [] }
     end
 
     query = <<-SQL
@@ -150,6 +152,10 @@ describe SearchObject::Plugin::Graphql do
           fields {
             name
             deprecationReason
+            args {
+              name
+              description
+            }
             type {
               name
               fields {
@@ -172,6 +178,10 @@ describe SearchObject::Plugin::Graphql do
           'fields' => [{
             'name' => 'posts',
             'deprecationReason' => nil,
+            'args' => [{
+              'name' => 'option',
+              'description' => 'text'
+            }],
             'type' => {
               'name' => 'Test',
               'fields' => [{
@@ -241,7 +251,5 @@ describe SearchObject::Plugin::Graphql do
         }
       )
     end
-
-    it 'accepts description'
   end
 end
