@@ -1,5 +1,5 @@
 # Changelog
 
-## Version 0.1 (unreleased)
+## Version 0.1
 
 * Initial release (@rstankov)
