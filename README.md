@@ -26,7 +26,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'search_object'
+gem 'search_object_graphql'
 ```
 
 And then execute:
@@ -35,7 +35,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install search_object
+    $ gem install search_object_graphql
 
 ## Dependencies
 
