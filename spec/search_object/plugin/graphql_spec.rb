@@ -25,6 +25,8 @@ describe SearchObject::Plugin::Graphql do
 
     schema = GraphQL::Schema.define do
       query query_type
+
+      max_complexity 1000
     end
 
     schema.execute(query_string, context: context)
@@ -191,6 +193,57 @@ describe SearchObject::Plugin::Graphql do
           }]
         }
       }
+    )
+  end
+
+  it 'can mark search object as deprecated' do
+    search_object = define_search_class do
+      scope { [] }
+      type types[PostType]
+      deprecation_reason 'Not needed any more'
+    end
+
+    query = <<-SQL
+      {
+        __type(name: "Query") {
+          name
+          fields {
+            name
+          }
+        }
+      }
+    SQL
+
+    result = execute_query_on_schema(query) do
+      field :posts, function: search_object
+    end
+
+    expect(result).to eq(
+      'data' => {
+        '__type' => {
+          'name' => 'Query',
+          'fields' => []
+        }
+      }
+    )
+
+  end
+
+  it 'can define complexity' do
+    search_object = define_search_class do
+      scope { [] }
+
+      complexity 10_000
+    end
+
+    result = execute_query_on_schema('{ posts { id } }') do
+      field :posts, types[PostType], function: search_object
+    end
+
+    expect(result).to eq(
+      'errors' => [{
+        'message' => 'Query has complexity of 10001, which exceeds max complexity of 1000'
+      }]
     )
   end
 
