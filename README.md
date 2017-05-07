@@ -6,6 +6,20 @@
 
 [SearchObject](https://github.com/RStankov/SearchObject) plugin for [GraphQL Ruby](https://rmosolgo.github.io/graphql-ruby/).
 
+## Table of Contents
+
+* [Installation](#installation)
+* [Dependencies](#dependencies)
+* [Usage](#usage)
+  * [Example](#example)
+* [Features](#features)
+  * [Custom Types](#custom-types)
+  * [Documentation](#documentation)
+  * [Default Values](#default-values)
+  * [Accessing Parent Object](#accessing-parent-object)
+  * [Enums Support](#enums-support)
+  * [Relay Support](#relay-support)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -58,11 +72,11 @@ posts(published: true) { ... }
 posts(published: true, name: 'Example') { ... }
 ```
 
-## Example
+### Example
 
 You can find example of most important features and plugins - [here](https://github.com/RStankov/SearchObjectGraphQL/tree/master/example).
 
-## Tips & Tricks
+## Features
 
 ### Custom Types
 
@@ -115,7 +129,7 @@ end
 
 Sometimes you want to scope posts based on parent object, it is accessible as `object` property:
 
-```
+```ruby
 class PostResolver
   include SearchObject.module(:graphql)
 
@@ -130,7 +144,7 @@ If you need GraphQL context, it is accessible as `context`.
 
 ### Enums Support
 
-```
+```ruby
 class PostSearch
   include SearchObject.module(:graphql)
 
