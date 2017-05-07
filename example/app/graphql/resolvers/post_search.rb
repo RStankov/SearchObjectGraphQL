@@ -1,7 +1,5 @@
 module Resolvers
   class PostSearch < Resolvers::BaseSearchResolver
-    include SearchObject.module(:graphql)
-
     type Types::PostType
     description 'Lists posts'
 
