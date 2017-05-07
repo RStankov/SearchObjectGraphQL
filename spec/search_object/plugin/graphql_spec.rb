@@ -16,58 +16,50 @@ describe SearchObject::Plugin::Graphql do
     field :id, !types.ID
   end
 
-  def execute_query_on_schema(query_string, context: {}, &block)
+  def define_schema(&block)
     query_type = GraphQL::ObjectType.define do
       name 'Query'
 
       instance_eval(&block)
     end
 
-    schema = GraphQL::Schema.define do
+    GraphQL::Schema.define do
       query query_type
 
       max_complexity 1000
     end
-
-    schema.execute(query_string, context: context)
   end
 
   def define_search_class(&block)
     Class.new do
       include SearchObject.module(:graphql)
 
-      if block_given?
-        instance_eval(&block)
+      scope { [] }
+
+      instance_eval(&block) if block_given?
+    end
+  end
+
+  def define_search_class_and_return_schema(&block)
+    search_object = define_search_class(&block)
+
+    define_schema do
+      if search_object.type.nil?
+        field :posts, types[PostType], function: search_object
       else
-        scope { [] }
+        field :posts, function: search_object
       end
     end
   end
 
-  it 'has context attribute' do
-    search = define_search_class.new(context: :context)
-
-    expect(search.context).to eq :context
-  end
-
-  it 'has object attribute' do
-    search = define_search_class.new(object: :object)
-
-    expect(search.object).to eq :object
-  end
-
-  it 'can be used as function' do
-    search_object = define_search_class do
+  it 'can be used as GraphQL::Function' do
+    schema = define_search_class_and_return_schema do
       scope { [Post.new('1'), Post.new('2'), Post.new('3')] }
-
-      type types[PostType]
 
       option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
     end
 
-    result = execute_query_on_schema('{ posts(id: "2") { id } }') do
-      field :posts, function: search_object
-    end
+    result = schema.execute '{ posts(id: "2") { id } }'
 
     expect(result).to eq(
       'data' => {
@@ -76,36 +68,7 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  it 'all data is passed' do
-    search_object = define_search_class do
-      scope { [] }
-
-      option(:argument, type: !types.String) { |_scope, value| [object, Post.new(context[:value]), Post.new(value)] }
-    end
-
-    parent_type = GraphQL::ObjectType.define do
-      name 'ParentType'
-
-      field :posts, types[PostType], function: search_object
-    end
-
-    result = execute_query_on_schema('{ parent { posts(argument: "argument") { id }  } }', context: { value: 'context' }) do
-      field :parent do
-        type parent_type
-        resolve ->(_obj, _args, _ctx) { Post.new('parent') }
-      end
-    end
-
-    expect(result).to eq(
-      'data' => {
-        'parent' => {
-          'posts' => [Post.new('parent').to_json, Post.new('context').to_json, Post.new('argument').to_json]
-        }
-      }
-    )
-  end
-
-  it 'can use object for getting a scope' do
+  it 'can access to parent object' do
     search_object = define_search_class do
       scope { object.posts }
     end
@@ -116,26 +79,53 @@ describe SearchObject::Plugin::Graphql do
       field :posts, types[PostType], function: search_object
     end
 
-    result = execute_query_on_schema('{ parent { posts { id }  } }') do
-      field :parent do
-        type parent_type
-        resolve ->(_obj, _args, _ctx) { OpenStruct.new posts: [Post.new('id')] }
+    schema = define_schema do
+      field :parent, parent_type do
+        resolve ->(_obj, _args, _ctx) { OpenStruct.new posts: [Post.new('from_parent')] }
       end
     end
+
+    result = schema.execute '{ parent { posts { id }  } }'
 
     expect(result).to eq(
       'data' => {
         'parent' => {
-          'posts' => [Post.new('id').to_json]
+          'posts' => [Post.new('from_parent').to_json]
         }
       }
     )
   end
 
-  it 'propertly can define types' do
-    search_object = define_search_class do
-      scope { [] }
+  it 'can access to context object' do
+    schema = define_search_class_and_return_schema do
+      scope { [Post.new(context[:value])] }
+    end
 
+    result = schema.execute('{ posts { id } }', context: { value: 'context' })
+
+    expect(result).to eq(
+      'data' => {
+        'posts' => [Post.new('context').to_json]
+      }
+    )
+  end
+
+  it 'can define complexity' do
+    schema = define_search_class_and_return_schema do
+      complexity 10_000
+    end
+
+    result = schema.execute '{ posts { id } }'
+
+    expect(result).to eq(
+      'errors' => [{
+        'message' => 'Query has complexity of 10001, which exceeds max complexity of 1000'
+      }]
+    )
+  end
+
+  it 'can define a custom type' do
+    schema = define_search_class_and_return_schema do
       type do
         name 'Test'
 
@@ -143,21 +133,15 @@ describe SearchObject::Plugin::Graphql do
       end
 
       description 'Test description'
-
-      option('option', type: types.String, description: 'text') { [] }
     end
 
-    query = <<-SQL
+    result = schema.execute <<-SQL
       {
         __type(name: "Query") {
           name
           fields {
             name
             deprecationReason
-            args {
-              name
-              description
-            }
             type {
               name
               fields {
@@ -169,10 +153,6 @@ describe SearchObject::Plugin::Graphql do
       }
     SQL
 
-    result = execute_query_on_schema(query) do
-      field :posts, function: search_object
-    end
-
     expect(result).to eq(
       'data' => {
         '__type' => {
@@ -180,10 +160,6 @@ describe SearchObject::Plugin::Graphql do
           'fields' => [{
             'name' => 'posts',
             'deprecationReason' => nil,
-            'args' => [{
-              'name' => 'option',
-              'description' => 'text'
-            }],
             'type' => {
               'name' => 'Test',
               'fields' => [{
@@ -196,14 +172,13 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  it 'can mark search object as deprecated' do
-    search_object = define_search_class do
-      scope { [] }
+  it 'can be marked as deprecated' do
+    schema = define_search_class_and_return_schema do
       type types[PostType]
       deprecation_reason 'Not needed any more'
     end
 
-    query = <<-SQL
+    result = schema.execute <<-QUERY
       {
         __type(name: "Query") {
           name
@@ -212,11 +187,7 @@ describe SearchObject::Plugin::Graphql do
           }
         }
       }
-    SQL
-
-    result = execute_query_on_schema(query) do
-      field :posts, function: search_object
-    end
+    QUERY
 
     expect(result).to eq(
       'data' => {
@@ -226,38 +197,17 @@ describe SearchObject::Plugin::Graphql do
         }
       }
     )
-
-  end
-
-  it 'can define complexity' do
-    search_object = define_search_class do
-      scope { [] }
-
-      complexity 10_000
-    end
-
-    result = execute_query_on_schema('{ posts { id } }') do
-      field :posts, types[PostType], function: search_object
-    end
-
-    expect(result).to eq(
-      'errors' => [{
-        'message' => 'Query has complexity of 10001, which exceeds max complexity of 1000'
-      }]
-    )
   end
 
   describe 'option' do
     it 'converts GraphQL::EnumType to SearchObject enum' do
-      enum_type = GraphQL::EnumType.define do
-        name 'TestEnum'
+      schema = define_search_class_and_return_schema do
+        enum_type = GraphQL::EnumType.define do
+          name 'TestEnum'
 
-        value 'PRICE'
-        value 'DATE'
-      end
-
-      search_object = define_search_class do
-        scope { [] }
+          value 'PRICE'
+          value 'DATE'
+        end
 
         option(:order, type: enum_type)
 
@@ -270,9 +220,7 @@ describe SearchObject::Plugin::Graphql do
         end
       end
 
-      result = execute_query_on_schema('{ posts(order: PRICE) { id } }') do
-        field :posts, types[PostType], function: search_object
-      end
+      result = schema.execute '{ posts(order: PRICE) { id } }'
 
       expect(result).to eq(
         'data' => {
@@ -281,28 +229,60 @@ describe SearchObject::Plugin::Graphql do
       )
     end
 
-    it 'raises error when no type is given' do
-      expect { define_search_class { option :name } }.to raise_error described_class::MissingTypeDefinitionError
-    end
-
     it 'accepts default type' do
-      search_object = define_search_class do
-        scope { [] }
-
+      schema = define_search_class_and_return_schema do
         option(:id, type: types.String, default: 'default') do |_scope, value|
           [Post.new(value)]
         end
       end
 
-      result = execute_query_on_schema('{ posts { id } }') do
-        field :posts, types[PostType], function: search_object
-      end
+      result = schema.execute '{ posts { id } }'
 
       expect(result).to eq(
         'data' => {
           'posts' => [Post.new('default').to_json]
         }
       )
+    end
+
+    it 'accepts description' do
+      schema = define_search_class_and_return_schema do
+        type PostType
+
+        option('option', type: types.String, description: 'what this argument does') { [] }
+      end
+
+      result = schema.execute <<-SQL
+        {
+          __type(name: "Query") {
+            name
+            fields {
+              args {
+                name
+                description
+              }
+            }
+          }
+        }
+      SQL
+
+      expect(result).to eq(
+        'data' => {
+          '__type' => {
+            'name' => 'Query',
+            'fields' => [{
+              'args' => [{
+                'name' => 'option',
+                'description' => 'what this argument does'
+              }]
+            }]
+          }
+        }
+      )
+    end
+
+    it 'raises error when no type is given' do
+      expect { define_search_class { option :name } }.to raise_error described_class::MissingTypeDefinitionError
     end
   end
 end
