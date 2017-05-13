@@ -20,6 +20,8 @@
   * [Accessing Parent Object](#accessing-parent-object)
   * [Enums Support](#enums-support)
   * [Relay Support](#relay-support)
+* [Contributing](#contributing)
+* [License](#license)
 
 ## Installation
 
