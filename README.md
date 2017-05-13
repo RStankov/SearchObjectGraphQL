@@ -50,7 +50,7 @@ Just include the ```SearchObject.module``` and define your search options and th
 class PostResolver
   include SearchObject.module(:graphql)
 
-  type PostType
+  type types[PostType]
 
   scope { Post.all }
 

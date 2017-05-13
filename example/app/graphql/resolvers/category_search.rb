@@ -1,6 +1,6 @@
 module Resolvers
   class CategorySearch < Resolvers::BaseSearchResolver
-    type Types::CategoryType
+    type types[Types::CategoryType]
     description 'Lists categories'
 
     OrderEnum = GraphQL::EnumType.define do

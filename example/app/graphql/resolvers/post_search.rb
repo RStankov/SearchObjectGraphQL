@@ -1,6 +1,6 @@
 module Resolvers
   class PostSearch < Resolvers::BaseSearchResolver
-    type Types::PostType
+    type types[Types::PostType]
     description 'Lists posts'
 
     OrderEnum = GraphQL::EnumType.define do
