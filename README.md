@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/search_object.svg)](http://badge.fury.io/rb/search_object_graphql)
+[![Gem Version](https://badge.fury.io/rb/search_object_graphql.svg)](http://badge.fury.io/rb/search_object_graphql)
 [![Code Climate](https://codeclimate.com/github/RStankov/SearchObjectGraphQL.svg)](https://codeclimate.com/github/RStankov/SearchObjectGraphQL)
 [![Build Status](https://secure.travis-ci.org/RStankov/SearchObjectGraphQL.svg)](http://travis-ci.org/RStankov/SearchObjectGraphQL)
 [![Code coverage](https://coveralls.io/repos/RStankov/SearchObjectGraphQL/badge.svg?branch=master#2)](https://coveralls.io/r/RStankov/SearchObjectGraphQL)
