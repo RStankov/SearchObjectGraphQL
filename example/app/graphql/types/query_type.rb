@@ -2,7 +2,7 @@
 
 module Types
   class QueryType < Types::BaseObject
-    field :categories, CategoryType.connection_type, null: false, function: Resolvers::CategorySearch
-    field :posts, PostType.connection_type, null: false, function: Resolvers::PostSearch
+    field :categories, function: Resolvers::CategorySearch
+    field :posts, function: Resolvers::PostSearch
   end
 end
