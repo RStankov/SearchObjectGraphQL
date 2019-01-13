@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-Schema = GraphQL::Schema.define do
+class Schema < GraphQL::Schema
   query Types::QueryType
 end

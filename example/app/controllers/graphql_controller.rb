@@ -2,30 +2,32 @@
 
 class GraphqlController < ApplicationController
   def execute
-    render json: Schema.execute(query, variables: variables, context: context)
+    result = Schema.execute(params[:query],
+                            variables: ensure_hash(params[:variables]),
+                            context: {},
+                            operation_name: params[:operationName])
+    render json: result
+  rescue StandardError => error
+    raise error unless Rails.env.development?
+
+    handle_error_in_development error
   end
 
   private
 
-  def query
-    params[:query]
-  end
-
-  def variables
-    ensure_hash(params[:variables])
-  end
-
-  def context
-    {}
-  end
-
-  # Handle form data, JSON body, or a blank value
-  def ensure_hash(params)
-    case params
-    when String then params.present? ? ensure_hash(JSON.parse(params)) : {}
-    when Hash, ActionController::Parameters then params
+  def ensure_hash(ambiguous_param)
+    case ambiguous_param
+    when String then ambiguous_param.present? ? ensure_hash(JSON.parse(ambiguous_param)) : {}
+    when Hash, ActionController::Parameters then ambiguous_param
     when nil then {}
-    else raise ArgumentError, "Unexpected parameter: #{params}"
+    else raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
     end
+  end
+
+  def handle_error_in_development(error)
+    logger.error error.message
+    logger.error error.backtrace.join("\n")
+
+    render json: { error: { message: error.message, backtrace: error.backtrace }, data: {} }, status: 500
   end
 end

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-Types::CategoryType = GraphQL::ObjectType.define do
-  name 'Category'
+module Types
+  class CategoryType < BaseObject
+    field :id, ID, null: false
+    field :name, String, null: false
 
-  field :id, !types.ID
-  field :name, !types.String
-
-  connection :posts, Types::PostType.connection_type, function: Resolvers::PostSearch
+    field :posts, PostType.connection_type, null: false, function: Resolvers::PostSearch
+  end
 end

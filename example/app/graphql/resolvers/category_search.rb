@@ -2,11 +2,11 @@
 
 module Resolvers
   class CategorySearch < Resolvers::BaseSearchResolver
-    type types[Types::CategoryType]
+    type Types::CategoryType.connection_type
     description 'Lists categories'
 
-    OrderEnum = GraphQL::EnumType.define do
-      name 'CategoryOrder'
+    class OrderEnum < Types::BaseEnum
+      graphql_name 'CategoryOrder'
 
       value 'RECENT'
       value 'NAME'

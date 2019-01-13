@@ -2,11 +2,11 @@
 
 module Resolvers
   class PostSearch < Resolvers::BaseSearchResolver
-    type types[Types::PostType]
+    type Types::PostType.connection_type
     description 'Lists posts'
 
-    OrderEnum = GraphQL::EnumType.define do
-      name 'PostOrder'
+    class OrderEnum < Types::BaseEnum
+      graphql_name 'PostOrder'
 
       value 'RECENT'
       value 'VIEWS'
@@ -53,7 +53,7 @@ module Resolvers
     end
 
     def apply_order_with_recent(scope)
-      scope.order 'published_at IS NOT NULL, published_at DESC'
+      scope.order Arel.sql('published_at IS NOT NULL'), published_at: :desc
     end
 
     def apply_order_with_views(scope)
