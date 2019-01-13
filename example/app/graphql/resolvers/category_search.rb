@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Resolvers
   class CategorySearch < Resolvers::BaseSearchResolver
     type types[Types::CategoryType]

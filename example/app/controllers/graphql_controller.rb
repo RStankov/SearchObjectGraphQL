@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class GraphqlController < ApplicationController
   def execute
     render json: Schema.execute(query, variables: variables, context: context)

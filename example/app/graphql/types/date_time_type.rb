@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Types::DateTimeType = GraphQL::ScalarType.define do
   name 'DateTime'
 

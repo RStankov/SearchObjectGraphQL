@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SearchObject
   module Plugin
     module Graphql
@@ -41,21 +43,25 @@ module SearchObject
 
         def type(value = :default, &block)
           return config[:type] if value == :default && !block_given?
+
           config[:type] = block_given? ? GraphQL::ObjectType.define(&block) : value
         end
 
         def complexity(value = :default)
           return config[:complexity] || 1 if value == :default
+
           config[:complexity] = value
         end
 
         def description(value = :default)
           return config[:description] if value == :default
+
           config[:description] = value
         end
 
         def deprecation_reason(value = :default)
           return config[:deprecation_reason] if value == :default
+
           config[:deprecation_reason] = value
         end
       end

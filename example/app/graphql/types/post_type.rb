@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Types::PostType = GraphQL::ObjectType.define do
   name 'Post'
 

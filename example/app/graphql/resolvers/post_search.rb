@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Resolvers
   class PostSearch < Resolvers::BaseSearchResolver
     type types[Types::PostType]
