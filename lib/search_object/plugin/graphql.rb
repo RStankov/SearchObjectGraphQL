@@ -31,8 +31,8 @@ module SearchObject
           GraphQL::Define::TypeDefiner.instance
         end
 
-        # NOTE(rstankov): GraphQL::Function interface
-        # Documentation - https://rmosolgo.github.io/graphql-ruby/schema/code_reuse#functions
+        # NOTE(rstankov): GraphQL::Function interface (deprecated in favour of GraphQL::Schema::Resolver)
+        # Documentation - http://graphql-ruby.org/guides
         def call(object, args, context)
           new(filters: args.to_h, object: object, context: context).results
         end
