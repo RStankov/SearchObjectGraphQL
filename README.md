@@ -52,19 +52,19 @@ Just include the ```SearchObject.module``` and define your search options and th
 class PostResolver
   include SearchObject.module(:graphql)
 
-  type types[PostType]
+  type [PostType], null: false
 
   scope { Post.all }
 
-  option(:name, type: types.String)       { |scope, value| scope.where name: value }
-  option(:published, type: types.Boolean) { |scope, value| value ? scope.published : scope.unpublished }
+  option(:name, type: String)       { |scope, value| scope.where name: value }
+  option(:published, type: Boolean) { |scope, value| value ? scope.published : scope.unpublished }
 end
 ```
 
-Then you can just use `PostResolver` as [GraphQL::Function](https://rmosolgo.github.io/graphql-ruby/schema/code_reuse#functions):
+Then you can just use `PostResolver` as [GraphQL::Schema::Resolver](https://graphql-ruby.org/fields/resolvers.html):
 
 ```ruby
-field :posts, function: PostResolver
+field :posts, resolver: PostResolver
 ```
 
 Options are exposed as arguments in the GraphQL query:
@@ -80,26 +80,6 @@ posts(published: true, name: 'Example') { ... }
 You can find example of most important features and plugins - [here](https://github.com/RStankov/SearchObjectGraphQL/tree/master/example).
 
 ## Features
-
-### Custom Types
-
-Custom types can be define inside the search object:
-
-```ruby
-class PostResolver
-  include SearchObject.module(:graphql)
-
-  type do
-    name 'Custom Type'
-
-    field :id, !types.ID
-    field :title, !types.String
-    field :body, !types.String
-  end
-
-  # ...
-end
-```
 
 ### Documentation
 
@@ -177,10 +157,36 @@ end
 
 ### Relay Support
 
-Search objects can be used as [Relay Connections](https://rmosolgo.github.io/graphql-ruby/relay/connections):
+Search objects can be used as [Relay Connections](https://graphql-ruby.org/relay/connections.html):
 
 ```ruby
-connection :posts, Types::PostType.connection_type, function: Resolvers::PostSearch
+class PostResolver
+  include SearchObject.module(:graphql)
+
+  type PostType.connection_type, null: false
+
+  # ...
+end
+```
+
+```ruby
+field :posts, resolver: PostResolver
+```
+
+### Legacy Function Support
+
+```ruby
+class PostResolver
+  include SearchObject.module(:graphql)
+
+  type [PostType], null: false
+
+  # ...
+end
+```
+
+```ruby
+field :posts, function: PostResolver
 ```
 
 ## Contributing

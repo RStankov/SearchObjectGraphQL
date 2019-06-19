@@ -26,8 +26,20 @@ Style/EachWithObject:
 Style/CollectionMethods:
   Enabled: false
 
+# Disables "Avoid the use of double negation (!!)."
+Style/DoubleNegation:
+  Enabled: false
+
 # Disables "Block has too many lines."
 Metrics/BlockLength:
+  Enabled: false
+
+# Disables "Assignment Branch Condition size for field_options is too high."
+Metrics/AbcSize:
+  Enabled: false
+
+# Disables "Method has too many line."
+Metrics/MethodLength:
   Enabled: false
 
 # Disables "Example has too many lines."

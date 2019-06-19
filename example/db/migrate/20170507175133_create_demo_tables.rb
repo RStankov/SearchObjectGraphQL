@@ -7,7 +7,7 @@ class CreateDemoTables < ActiveRecord::Migration[5.1]
     end
 
     create_table :posts do |t|
-      t.references :category, foreign_key: true
+      t.references :category
       t.string :title, null: false
       t.index :title, unique: true
       t.string :body, null: false
