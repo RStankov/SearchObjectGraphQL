@@ -26,7 +26,7 @@ module SearchObject
       end
 
       module ClassMethods
-        KEYS = %i(type default description)
+        KEYS = %i[type default description].freeze
         def option(name, options = {}, &block)
           config[:arguments] ||= {}
           config[:arguments][name.to_s] = KEYS.inject({}) do |acc, key|
@@ -106,12 +106,12 @@ module SearchObject
                 description: options[:description],
                 required: !!options[:required],
                 default_value: options.fetch(:default) { ::GraphQL::Schema::Argument::NO_DEFAULT },
-                owner: self,
+                owner: self
               )
               acc
             end,
             null: !!config[:null],
-            complexity: complexity,
+            complexity: complexity
           }
         end
 

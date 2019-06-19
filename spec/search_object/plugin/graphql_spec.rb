@@ -81,7 +81,7 @@ describe SearchObject::Plugin::Graphql do
   end
 
   it 'can be used as GraphQL::Function' do
-     post_type = GraphQL::ObjectType.define do
+    post_type = GraphQL::ObjectType.define do
       name 'Post'
 
       field :id, !types.ID
@@ -123,7 +123,7 @@ describe SearchObject::Plugin::Graphql do
       field :parent, parent_type, null: false
     end
 
-    root = OpenStruct.new(parent: OpenStruct.new(posts: [Post.new('from_parent')]) )
+    root = OpenStruct.new(parent: OpenStruct.new(posts: [Post.new('from_parent')]))
 
     result = schema.execute '{ parent { posts { id }  } }', root_value: root
 
