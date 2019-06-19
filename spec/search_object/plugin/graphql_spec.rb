@@ -12,20 +12,18 @@ describe SearchObject::Plugin::Graphql do
     end
   end
 
-  PostType = GraphQL::ObjectType.define do
-    name 'Post'
-
-    field :id, !types.ID
+  class PostType < GraphQL::Schema::Object
+    field :id, ID, null: false
   end
 
   def define_schema(&block)
-    query_type = GraphQL::ObjectType.define do
-      name 'Query'
+    query_type = Class.new(GraphQL::Schema::Object) do
+      graphql_name 'Query'
 
       instance_eval(&block)
     end
 
-    GraphQL::Schema.define do
+    Class.new(GraphQL::Schema) do
       query query_type
 
       max_complexity 1000
@@ -47,18 +45,58 @@ describe SearchObject::Plugin::Graphql do
 
     define_schema do
       if search_object.type.nil?
-        field :posts, types[PostType], function: search_object
+        field :posts, [PostType], resolver: search_object
       else
-        field :posts, function: search_object
+        field :posts, resolver: search_object
       end
     end
   end
 
-  it 'can be used as GraphQL::Function' do
-    schema = define_search_class_and_return_schema do
+  it 'can be used as GraphQL::Schema::Resolver' do
+    post_type = Class.new(GraphQL::Schema::Object) do
+      graphql_name 'Post'
+
+      field :id, GraphQL::Types::ID, null: false
+    end
+
+    search_object = define_search_class do
       scope { [Post.new('1'), Post.new('2'), Post.new('3')] }
 
+      type [post_type]
+
       option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
+    end
+
+    schema = define_schema do
+      field :posts, resolver: search_object
+    end
+
+    result = schema.execute '{ posts(id: "2") { id } }'
+
+    expect(result).to eq(
+      'data' => {
+        'posts' => [Post.new('2').to_json]
+      }
+    )
+  end
+
+  it 'can be used as GraphQL::Function' do
+     post_type = GraphQL::ObjectType.define do
+      name 'Post'
+
+      field :id, !types.ID
+    end
+
+    search_object = define_search_class do
+      scope { [Post.new('1'), Post.new('2'), Post.new('3')] }
+
+      type types[post_type]
+
+      option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
+    end
+
+    schema = define_schema do
+      field :posts, function: search_object
     end
 
     result = schema.execute '{ posts(id: "2") { id } }'
@@ -75,19 +113,19 @@ describe SearchObject::Plugin::Graphql do
       scope { object.posts }
     end
 
-    parent_type = GraphQL::ObjectType.define do
-      name 'ParentType'
+    parent_type = Class.new(GraphQL::Schema::Object) do
+      graphql_name 'Parent'
 
-      field :posts, types[PostType], function: search_object
+      field :posts, [PostType], resolver: search_object
     end
 
     schema = define_schema do
-      field :parent, parent_type do
-        resolve ->(_obj, _args, _ctx) { OpenStruct.new posts: [Post.new('from_parent')] }
-      end
+      field :parent, parent_type, null: false
     end
 
-    result = schema.execute '{ parent { posts { id }  } }'
+    root = OpenStruct.new(parent: OpenStruct.new(posts: [Post.new('from_parent')]) )
+
+    result = schema.execute '{ parent { posts { id }  } }', root_value: root
 
     expect(result).to eq(
       'data' => {
@@ -176,7 +214,7 @@ describe SearchObject::Plugin::Graphql do
 
   it 'can be marked as deprecated' do
     schema = define_search_class_and_return_schema do
-      type types[PostType]
+      type [PostType]
       deprecation_reason 'Not needed any more'
     end
 
@@ -191,7 +229,7 @@ describe SearchObject::Plugin::Graphql do
       }
     QUERY
 
-    expect(result).to eq(
+    expect(result.to_h).to eq(
       'data' => {
         '__type' => {
           'name' => 'Query',
@@ -202,6 +240,35 @@ describe SearchObject::Plugin::Graphql do
   end
 
   describe 'option' do
+    it 'converts GraphQL::Schema::Enum to SearchObject enum' do
+      schema = define_search_class_and_return_schema do
+        enum_type = Class.new(GraphQL::Schema::Enum) do
+          graphql_name 'PostOrder'
+
+          value 'PRICE'
+          value 'DATE'
+        end
+
+        option(:order, type: enum_type)
+
+        define_method(:apply_order_with_price) do |_scope|
+          [Post.new('price')]
+        end
+
+        define_method(:apply_order_with_date) do |_scope|
+          [Post.new('date')]
+        end
+      end
+
+      result = schema.execute '{ posts(order: PRICE) { id } }'
+
+      expect(result).to eq(
+        'data' => {
+          'posts' => [Post.new('price').to_json]
+        }
+      )
+    end
+
     it 'converts GraphQL::EnumType to SearchObject enum' do
       schema = define_search_class_and_return_schema do
         enum_type = GraphQL::EnumType.define do

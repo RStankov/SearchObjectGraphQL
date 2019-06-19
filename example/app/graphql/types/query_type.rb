@@ -3,6 +3,6 @@
 module Types
   class QueryType < Types::BaseObject
     field :categories, function: Resolvers::CategorySearch
-    field :posts, function: Resolvers::PostSearch
+    field :posts, resolver: Resolvers::PostSearch
   end
 end
