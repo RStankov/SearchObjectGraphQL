@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'graphql', '~> 1.5'
+  spec.add_dependency 'graphql', '~> 1.8'
   spec.add_dependency 'search_object', '~> 1.2.2'
 
   spec.add_development_dependency 'coveralls'
