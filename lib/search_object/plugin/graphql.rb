@@ -30,10 +30,10 @@ module SearchObject
         def option(name, options = {}, &block)
           config[:arguments] ||= {}
 
-          name = name.split('_').map(&:capitalize).join
+          name = name.to_s.split('_').map(&:capitalize).join
           name[0] = name[0].downcase
 
-          config[:arguments][name.to_s] = KEYS.inject({}) do |acc, key|
+          config[:arguments][name] = KEYS.inject({}) do |acc, key|
             acc[key] = options[key] if options.key?(key)
             acc
           end
