@@ -140,12 +140,6 @@ module SearchObject
           super "GraphQL type has to passed as :type to '#{name}' option"
         end
       end
-
-      private
-
-      def camelize(string)
-
-      end
     end
   end
 end
