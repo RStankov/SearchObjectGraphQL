@@ -31,7 +31,7 @@ module SearchObject
           config[:arguments] ||= {}
 
           name = name.split('_').map(&:capitalize).join
-          name[0] = name[0].downcase!
+          name[0] = name[0].downcase
 
           config[:arguments][name.to_s] = KEYS.inject({}) do |acc, key|
             acc[key] = options[key] if options.key?(key)
