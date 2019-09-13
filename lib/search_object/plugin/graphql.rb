@@ -29,6 +29,10 @@ module SearchObject
         KEYS = %i[type default description].freeze
         def option(name, options = {}, &block)
           config[:arguments] ||= {}
+
+          name = name.split('_').map(&:capitalize).join
+          name[0] = name[0].downcase!
+
           config[:arguments][name.to_s] = KEYS.inject({}) do |acc, key|
             acc[key] = options[key] if options.key?(key)
             acc
@@ -135,6 +139,12 @@ module SearchObject
         def initialize(name)
           super "GraphQL type has to passed as :type to '#{name}' option"
         end
+      end
+
+      private
+
+      def camelize(string)
+
       end
     end
   end
