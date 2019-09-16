@@ -29,10 +29,6 @@ module SearchObject
         KEYS = %i[type default description].freeze
         def option(name, options = {}, &block)
           config[:arguments] ||= {}
-
-          name = name.to_s.split('_').map(&:capitalize).join
-          name[0] = name[0].downcase
-
           config[:arguments][name] = KEYS.inject({}) do |acc, key|
             acc[key] = options[key] if options.key?(key)
             acc
@@ -104,6 +100,9 @@ module SearchObject
             resolver_class: self,
             deprecation_reason: deprecation_reason,
             arguments: (config[:arguments] || {}).inject({}) do |acc, (name, options)|
+              name = name.to_s.split('_').map(&:capitalize).join
+              name[0] = name[0].downcase
+
               acc[name] = ::GraphQL::Schema::Argument.new(
                 name: name.to_s,
                 type: options.fetch(:type) { raise MissingTypeDefinitionError, name },
