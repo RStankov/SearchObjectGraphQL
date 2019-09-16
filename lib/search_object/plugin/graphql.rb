@@ -29,7 +29,11 @@ module SearchObject
         KEYS = %i[type default description].freeze
         def option(name, options = {}, &block)
           config[:arguments] ||= {}
-          config[:arguments][name.to_s] = KEYS.inject({}) do |acc, key|
+
+          name = name.to_s.split('_').map(&:capitalize).join
+          name[0] = name[0].downcase
+
+          config[:arguments][name] = KEYS.inject({}) do |acc, key|
             acc[key] = options[key] if options.key?(key)
             acc
           end
