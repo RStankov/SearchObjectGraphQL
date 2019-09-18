@@ -35,7 +35,7 @@ module SearchObject
           end
 
           type = options.fetch(:type) { raise MissingTypeDefinitionError, name }
-          options[:enum] = type.values.keys if type.respond_to?(:values)
+          options[:enum] = type.values.map { |value, enum_value| enum_value.value || value } if type.respond_to?(:values)
 
           super(name, options, &block)
         end
