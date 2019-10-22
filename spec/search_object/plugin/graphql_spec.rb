@@ -314,6 +314,18 @@ describe SearchObject::Plugin::Graphql do
       )
     end
 
+    it 'accepts "required"' do
+      schema = define_search_class_and_return_schema do
+        option(:id, type: types.String, required: true) do |_scope, value|
+          [Post.new(value)]
+        end
+      end
+
+      result = schema.execute '{ posts { id } }'
+
+      expect(result['errors'][0]['message']).to eq("Field 'posts' is missing required arguments: id")
+    end
+
     it 'accepts description' do
       schema = define_search_class_and_return_schema do
         type PostType
