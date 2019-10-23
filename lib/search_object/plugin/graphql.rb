@@ -26,7 +26,7 @@ module SearchObject
       end
 
       module ClassMethods
-        KEYS = %i[type default description].freeze
+        KEYS = %i[type default description required].freeze
         def option(name, options = {}, &block)
           config[:arguments] ||= {}
           config[:arguments][name.to_s] = KEYS.inject({}) do |acc, key|
