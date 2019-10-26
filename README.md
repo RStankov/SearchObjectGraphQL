@@ -39,6 +39,14 @@ Or install it yourself as:
 
     $ gem install search_object_graphql
 
+
+**Require manually in your project**
+
+```ruby
+require 'search_object'
+require 'search_object/plugin/graphql'
+```
+
 ## Dependencies
 
 - `SearchObject` >= 1.2
