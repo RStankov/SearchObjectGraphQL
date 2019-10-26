@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.3 (unreleased)
+
+* __[fix]__ Support for GraphQL gem enums (@Postmodum37)
+
 ## Version 0.2
 
 * Added support for GraphQL::Schema::Resolver (@rstankov)
