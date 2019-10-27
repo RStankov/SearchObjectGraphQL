@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.3 (unreleased)
+## Version 0.3
 
 * __[feature]__ Allow passing `required` key to option definition (@vfonic)
 * __[fix]__ Support for GraphQL gem enums (@Postmodum37)
