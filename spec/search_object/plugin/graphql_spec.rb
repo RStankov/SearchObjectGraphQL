@@ -7,7 +7,7 @@ require 'search_object/plugin/graphql'
 
 describe SearchObject::Plugin::Graphql do
   Post = Struct.new(:id) do
-    def to_json
+    def to_json(_options = {})
       { 'id' => id }
     end
   end
