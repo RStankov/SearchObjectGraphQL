@@ -5,17 +5,17 @@ require 'graphql'
 require 'ostruct'
 require 'search_object/plugin/graphql'
 
+Post = Struct.new(:id) do
+  def to_json(_options = {})
+    { 'id' => id }
+  end
+end
+
+class PostType < GraphQL::Schema::Object
+  field :id, ID, null: false
+end
+
 describe SearchObject::Plugin::Graphql do
-  Post = Struct.new(:id) do
-    def to_json(_options = {})
-      { 'id' => id }
-    end
-  end
-
-  class PostType < GraphQL::Schema::Object
-    field :id, ID, null: false
-  end
-
   def define_schema(&block)
     query_type = Class.new(GraphQL::Schema::Object) do
       graphql_name 'Query'
