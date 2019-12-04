@@ -15,7 +15,7 @@ module SearchObject
         @object = object
         @context = context
 
-        super filters: filters, scope: scope, field: nil
+        super filters: filters, scope: scope, field: field
       end
 
       # NOTE(rstankov): GraphQL::Schema::Resolver interface
