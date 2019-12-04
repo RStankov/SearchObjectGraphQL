@@ -11,11 +11,11 @@ module SearchObject
 
       attr_reader :object, :context
 
-      def initialize(filters: {}, object: nil, context: {}, scope: nil)
+      def initialize(filters: {}, object: nil, context: {}, scope: nil, field: nil)
         @object = object
         @context = context
 
-        super filters: filters, scope: scope
+        super filters: filters, scope: scope, field: nil
       end
 
       # NOTE(rstankov): GraphQL::Schema::Resolver interface
