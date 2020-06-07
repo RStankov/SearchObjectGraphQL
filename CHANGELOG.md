@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.3.2
+
+* __[feature]__ Added `camelize` argument to `option`, *`true` by default* (@glenbray)
+
 ## Version 0.3.1
 
 * __[fix]__ Support for GraphQL gem version v1.9.16 (@ardinusawan)
