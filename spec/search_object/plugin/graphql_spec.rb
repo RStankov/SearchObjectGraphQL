@@ -362,6 +362,40 @@ describe SearchObject::Plugin::Graphql do
       )
     end
 
+    it 'accepts camelize' do
+      schema = define_search_class_and_return_schema do
+        type PostType
+
+        option('option_field', type: types.String, camelize: false)
+      end
+
+      result = schema.execute <<-SQL
+        {
+          __type(name: "Query") {
+            name
+            fields {
+              args {
+                name
+              }
+            }
+          }
+        }
+      SQL
+
+      expect(result.to_h).to eq(
+        'data' => {
+          '__type' => {
+            'name' => 'Query',
+            'fields' => [{
+              'args' => [{
+                'name' => 'option_field'
+              }]
+            }]
+          }
+        }
+      )
+    end
+
     it 'raises error when no type is given' do
       expect { define_search_class { option :name } }.to raise_error described_class::MissingTypeDefinitionError
     end

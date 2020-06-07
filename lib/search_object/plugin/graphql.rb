@@ -26,7 +26,7 @@ module SearchObject
       end
 
       module ClassMethods
-        KEYS = %i[type default description required].freeze
+        KEYS = %i[type default description required camelize].freeze
         def option(name, options = {}, &block)
           config[:arguments] ||= {}
           config[:arguments][name.to_s] = KEYS.inject({}) do |acc, key|
@@ -100,14 +100,17 @@ module SearchObject
             resolver_class: self,
             deprecation_reason: deprecation_reason,
             arguments: (config[:arguments] || {}).inject({}) do |acc, (name, options)|
-              name = name.to_s.split('_').map(&:capitalize).join
-              name[0] = name[0].downcase
+              if options.fetch(:camelize) { true }
+                name = name.to_s.split('_').map(&:capitalize).join
+                name[0] = name[0].downcase
+              end
 
               acc[name] = ::GraphQL::Schema::Argument.new(
                 name: name.to_s,
                 type: options.fetch(:type) { raise MissingTypeDefinitionError, name },
                 description: options[:description],
                 required: !!options[:required],
+                camelize: !!options[:camelize],
                 default_value: options.fetch(:default) { ::GraphQL::Schema::Argument::NO_DEFAULT },
                 owner: self
               )
