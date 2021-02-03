@@ -80,11 +80,11 @@ describe SearchObject::Plugin::Graphql do
     )
   end
 
-  it 'can be used as GraphQL::Function' do
-    post_type = GraphQL::ObjectType.define do
-      name 'Post'
+  it 'can be used as GraphQL::Function', skip: 'Stop support with GraphQL 1.12.3' do
+    post_type = Class.new(GraphQL::Schema::Object) do
+      graphql_name 'Post'
 
-      field :id, !types.ID
+      field :id, GraphQL::Types::ID, null: false
     end
 
     search_object = define_search_class do
@@ -101,7 +101,7 @@ describe SearchObject::Plugin::Graphql do
 
     result = schema.execute '{ posts(id: "2") { id } }'
 
-    expect(result).to eq(
+    expect(result.to_h).to eq(
       'data' => {
         'posts' => [Post.new('2').to_json]
       }
@@ -167,9 +167,9 @@ describe SearchObject::Plugin::Graphql do
   it 'can define a custom type' do
     schema = define_search_class_and_return_schema do
       type do
-        name 'Test'
+        graphql_name 'Test'
 
-        field :title, types.String
+        field :title, String, null: false
       end
 
       description 'Test description'
@@ -271,8 +271,8 @@ describe SearchObject::Plugin::Graphql do
 
     it 'converts GraphQL::EnumType to SearchObject enum' do
       schema = define_search_class_and_return_schema do
-        enum_type = GraphQL::EnumType.define do
-          name 'TestEnum'
+        enum_type = Class.new(GraphQL::Schema::Enum) do
+          graphql_name 'TestEnum'
 
           value 'PRICE'
           value 'DATE'

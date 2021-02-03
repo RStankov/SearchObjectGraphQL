@@ -2,7 +2,7 @@
 
 module Types
   class QueryType < Types::BaseObject
-    field :categories, function: Resolvers::CategorySearch
+    field :categories, resolver: Resolvers::CategorySearch
     field :posts, resolver: Resolvers::PostSearch
   end
 end
