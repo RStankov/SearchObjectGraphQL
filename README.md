@@ -181,22 +181,6 @@ end
 field :posts, resolver: PostResolver
 ```
 
-### Legacy Function Support
-
-```ruby
-class PostResolver
-  include SearchObject.module(:graphql)
-
-  type [PostType], null: false
-
-  # ...
-end
-```
-
-```ruby
-field :posts, function: PostResolver
-```
-
 ## Contributing
 
 1. Fork it

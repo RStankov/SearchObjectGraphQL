@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.0.0 (unreleased)
+
+* __[break]__ Removed support for legacy `GraphQL::Function` (@rstankov)
+* __[break]__ `type` creates type based on `GraphQL::Schema::Object`, not the deprecated `GraphQL::ObjectType.define` (@rstankov)
+
 ## Version 0.3.2
 
 * __[feature]__ Added `camelize` argument to `option`, *`true` by default* (@glenbray)
