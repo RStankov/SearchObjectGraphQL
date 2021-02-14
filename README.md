@@ -57,7 +57,7 @@ require 'search_object/plugin/graphql'
 Just include the ```SearchObject.module``` and define your search options and their types:
 
 ```ruby
-class PostResolver
+class PostResolver < GraphQL::Schema::Resolver
   include SearchObject.module(:graphql)
 
   type [PostType], null: false
@@ -94,7 +94,7 @@ You can find example of most important features and plugins - [here](https://git
 Search object itself can be documented, as well as its options:
 
 ```ruby
-class PostResolver
+class PostResolver < GraphQL::Schema::Resolver
   include SearchObject.module(:graphql)
 
   description 'Lists all posts'
@@ -107,7 +107,7 @@ end
 ### Default Values
 
 ```ruby
-class PostResolver
+class PostResolver < GraphQL::Schema::Resolver
   include SearchObject.module(:graphql)
 
   scope { Post.all }
@@ -121,7 +121,7 @@ end
 Sometimes you want to scope posts based on parent object, it is accessible as `object` property:
 
 ```ruby
-class PostResolver
+class PostResolver < GraphQL::Schema::Resolver
   include SearchObject.module(:graphql)
 
   # lists only posts from certain category
@@ -168,7 +168,7 @@ end
 Search objects can be used as [Relay Connections](https://graphql-ruby.org/relay/connections.html):
 
 ```ruby
-class PostResolver
+class PostResolver < GraphQL::Schema::Resolver
   include SearchObject.module(:graphql)
 
   type PostType.connection_type, null: false

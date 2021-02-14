@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Resolvers
-  class BaseSearchResolver
+  class BaseSearchResolver < BaseResolver
     include SearchObject.module(:graphql)
 
     def escape_search_term(term)

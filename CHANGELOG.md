@@ -2,6 +2,8 @@
 
 ## Version 1.0.0 (unreleased)
 
+* __[break]__ Removed support for defining types via `type` method (@rstankov)
+* __[break]__ Require `GraphQL::Schema::Resolver` inheritance (@rstankov)
 * __[break]__ Removed support for legacy `GraphQL::Function` (@rstankov)
 * __[break]__ `type` creates type based on `GraphQL::Schema::Object`, not the deprecated `GraphQL::ObjectType.define` (@rstankov)
 

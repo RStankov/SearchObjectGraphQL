@@ -4,8 +4,8 @@ module SearchObject
   module Plugin
     module Graphql
       def self.included(base)
+        raise NotIncludedInResolverError, base unless base.ancestors.include? GraphQL::Schema::Resolver
         base.include SearchObject::Plugin::Enum
-        base.include ::GraphQL::Schema::Member::GraphQLTypeNames
         base.extend ClassMethods
       end
 
@@ -65,29 +65,8 @@ module SearchObject
           config[:deprecation_reason] = value
         end
 
-        # NOTE(rstankov): GraphQL::Function interface (deprecated in favour of GraphQL::Schema::Resolver)
-        # Documentation - http://graphql-ruby.org/guides
-        def call(object, args, context)
-          new(filters: args.to_h, object: object, context: context).results
-        end
-
-        # NOTE(rstankov): Used for GraphQL::Function
         def types
           GraphQL::Define::TypeDefiner.instance
-        end
-
-        # NOTE(rstankov): Used for GraphQL::Function
-        def arguments
-          (config[:arguments] || {}).inject({}) do |acc, (name, options)|
-            argument = GraphQL::Argument.new
-            argument.name = name.to_s
-            argument.type = options.fetch(:type) { raise MissingTypeDefinitionError, name }
-            argument.default_value = options[:default] if options.key? :default
-            argument.description = options[:description] if options.key? :description
-
-            acc[name] = argument
-            acc
-          end
         end
 
         # NOTE(rstankov): Used for GraphQL::Schema::Resolver
@@ -120,20 +99,11 @@ module SearchObject
             complexity: complexity
           }
         end
+      end
 
-        # NOTE(rstankov): Used for GraphQL::Schema::Resolver
-        def visible?(_context)
-          true
-        end
-
-        # NOTE(rstankov): Used for GraphQL::Schema::Resolver
-        def accessible?(_context)
-          true
-        end
-
-        # NOTE(rstankov): Used for GraphQL::Schema::Resolver
-        def authorized?(_object, _context)
-          true
+      class NotIncludedInResolverError < ArgumentError
+        def initialize(base)
+          super "#{base.name} should inherit from GraphQL::Schema::Resolver. Current ancestors #{base.ancestors}"
         end
       end
 

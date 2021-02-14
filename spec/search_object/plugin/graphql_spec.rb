@@ -31,7 +31,7 @@ describe SearchObject::Plugin::Graphql do
   end
 
   def define_search_class(&block)
-    Class.new do
+    Class.new(GraphQL::Schema::Resolver) do
       include SearchObject.module(:graphql)
 
       scope { [] }
@@ -50,6 +50,12 @@ describe SearchObject::Plugin::Graphql do
         field :posts, resolver: search_object
       end
     end
+  end
+
+  it 'requires class to inherit from GraphQL::Schema::Resolver' do
+    expect do
+      Class.new { include SearchObject.module(:graphql) }
+    end.to raise_error SearchObject::Plugin::Graphql::NotIncludedInResolverError
   end
 
   it 'can be used as GraphQL::Schema::Resolver' do
@@ -74,34 +80,6 @@ describe SearchObject::Plugin::Graphql do
     result = schema.execute '{ posts(id: "2") { id } }'
 
     expect(result).to eq(
-      'data' => {
-        'posts' => [Post.new('2').to_json]
-      }
-    )
-  end
-
-  it 'can be used as GraphQL::Function', skip: 'Stop support with GraphQL 1.12.3' do
-    post_type = Class.new(GraphQL::Schema::Object) do
-      graphql_name 'Post'
-
-      field :id, GraphQL::Types::ID, null: false
-    end
-
-    search_object = define_search_class do
-      scope { [Post.new('1'), Post.new('2'), Post.new('3')] }
-
-      type types[post_type]
-
-      option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
-    end
-
-    schema = define_schema do
-      field :posts, function: search_object
-    end
-
-    result = schema.execute '{ posts(id: "2") { id } }'
-
-    expect(result.to_h).to eq(
       'data' => {
         'posts' => [Post.new('2').to_json]
       }
