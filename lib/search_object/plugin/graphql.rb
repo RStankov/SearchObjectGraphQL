@@ -5,6 +5,7 @@ module SearchObject
     module Graphql
       def self.included(base)
         raise NotIncludedInResolverError, base unless base.ancestors.include? GraphQL::Schema::Resolver
+
         base.include SearchObject::Plugin::Enum
         base.extend ClassMethods
       end
