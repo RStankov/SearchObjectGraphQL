@@ -2,7 +2,7 @@
 
 module Resolvers
   class PostSearch < Resolvers::BaseSearchResolver
-    type Types::PostType.connection_type
+    type Types::PostType.connection_type, null: false
     description 'Lists posts'
 
     class OrderEnum < Types::BaseEnum

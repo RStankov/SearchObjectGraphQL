@@ -2,7 +2,7 @@
 
 module Resolvers
   class CategorySearch < Resolvers::BaseSearchResolver
-    type Types::CategoryType.connection_type
+    type Types::CategoryType.connection_type, null: false
     description 'Lists categories'
 
     class OrderEnum < Types::BaseEnum

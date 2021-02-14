@@ -68,7 +68,7 @@ describe SearchObject::Plugin::Graphql do
     search_object = define_search_class do
       scope { [Post.new('1'), Post.new('2'), Post.new('3')] }
 
-      type [post_type]
+      type [post_type], null: 1
 
       option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
     end
@@ -139,81 +139,6 @@ describe SearchObject::Plugin::Graphql do
       'errors' => [{
         'message' => 'Query has complexity of 10001, which exceeds max complexity of 1000'
       }]
-    )
-  end
-
-  it 'can define a custom type' do
-    schema = define_search_class_and_return_schema do
-      type do
-        graphql_name 'Test'
-
-        field :title, String, null: false
-      end
-
-      description 'Test description'
-    end
-
-    result = schema.execute <<-SQL
-      {
-        __type(name: "Query") {
-          name
-          fields {
-            name
-            deprecationReason
-            type {
-              name
-              fields {
-                name
-              }
-            }
-          }
-        }
-      }
-    SQL
-
-    expect(result).to eq(
-      'data' => {
-        '__type' => {
-          'name' => 'Query',
-          'fields' => [{
-            'name' => 'posts',
-            'deprecationReason' => nil,
-            'type' => {
-              'name' => 'Test',
-              'fields' => [{
-                'name' => 'title'
-              }]
-            }
-          }]
-        }
-      }
-    )
-  end
-
-  it 'can be marked as deprecated' do
-    schema = define_search_class_and_return_schema do
-      type [PostType]
-      deprecation_reason 'Not needed any more'
-    end
-
-    result = schema.execute <<-QUERY
-      {
-        __type(name: "Query") {
-          name
-          fields {
-            name
-          }
-        }
-      }
-    QUERY
-
-    expect(result.to_h).to eq(
-      'data' => {
-        '__type' => {
-          'name' => 'Query',
-          'fields' => []
-        }
-      }
     )
   end
 
@@ -306,7 +231,7 @@ describe SearchObject::Plugin::Graphql do
 
     it 'accepts description' do
       schema = define_search_class_and_return_schema do
-        type PostType
+        type PostType, null: true
 
         option('option', type: types.String, description: 'what this argument does') { [] }
       end
@@ -342,7 +267,7 @@ describe SearchObject::Plugin::Graphql do
 
     it 'accepts camelize' do
       schema = define_search_class_and_return_schema do
-        type PostType
+        type PostType, null: true
 
         option('option_field', type: types.String, camelize: false)
       end
