@@ -299,6 +299,40 @@ describe SearchObject::Plugin::Graphql do
       )
     end
 
+    it 'does not override the default camelize option' do
+      schema = define_search_class_and_return_schema do
+        type PostType, null: true
+
+        option('option_field', type: types.String)
+      end
+
+      result = schema.execute <<~GRAPHQL
+        {
+          __type(name: "Query") {
+            name
+            fields {
+              args {
+                name
+              }
+            }
+          }
+        }
+      GRAPHQL
+
+      expect(result.to_h).to eq(
+        'data' => {
+          '__type' => {
+            'name' => 'Query',
+            'fields' => [{
+              'args' => [{
+                'name' => 'optionField'
+              }]
+            }]
+          }
+        }
+      )
+    end
+
     it 'raises error when no type is given' do
       expect { define_search_class { option :name } }.to raise_error described_class::MissingTypeDefinitionError
     end

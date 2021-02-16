@@ -31,12 +31,14 @@ module SearchObject
           type = options.fetch(:type) { raise MissingTypeDefinitionError, name }
           options[:enum] = type.values.map { |value, enum_value| enum_value.value || value } if type.respond_to?(:values)
 
+          argument_options = { required: options[:required] || false }
+          argument_options[:camelize] = options[:camelize] if options.include?(:camelize)
+          argument_options[:description] = options[:description] if options.include?(:description)
+
           argument(
             name.to_s,
             options[:type],
-            required: options[:required] || false,
-            description: options[:description],
-            camelize: options[:camelize]
+            **argument_options
           )
 
           super(name, options, &block)
