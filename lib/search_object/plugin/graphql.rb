@@ -29,18 +29,15 @@ module SearchObject
       module ClassMethods
         def option(name, options = {}, &block)
           type = options.fetch(:type) { raise MissingTypeDefinitionError, name }
-          options[:enum] = type.values.map { |value, enum_value| enum_value.value || value } if type.respond_to?(:values)
 
           argument_options = { required: options[:required] || false }
           argument_options[:camelize] = options[:camelize] if options.include?(:camelize)
           argument_options[:default_value] = options[:default] if options.include?(:default)
           argument_options[:description] = options[:description] if options.include?(:description)
 
-          argument(
-            name.to_s,
-            options[:type],
-            **argument_options
-          )
+          argument(name.to_s, type, **argument_options)
+
+          options[:enum] = type.values.map { |value, enum_value| enum_value.value || value } if type.respond_to?(:values)
 
           super(name, options, &block)
         end
