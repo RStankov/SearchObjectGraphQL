@@ -217,6 +217,42 @@ describe SearchObject::Plugin::Graphql do
       )
     end
 
+    it 'sets default_value on the argument' do
+      schema = define_search_class_and_return_schema do
+        type PostType, null: true
+
+        option('option', type: types.String, default: 'default') { [] }
+      end
+
+      result = schema.execute <<~GRAPHQL
+        {
+          __type(name: "Query") {
+            name
+            fields {
+              args {
+                name
+                defaultValue
+              }
+            }
+          }
+        }
+      GRAPHQL
+
+      expect(result).to eq(
+        'data' => {
+          '__type' => {
+            'name' => 'Query',
+            'fields' => [{
+              'args' => [{
+                'name' => 'option',
+                'defaultValue' => '"default"'
+              }]
+            }]
+          }
+        }
+      )
+    end
+
     it 'accepts "required"' do
       schema = define_search_class_and_return_schema do
         option(:id, type: types.String, required: true) do |_scope, value|
@@ -292,6 +328,40 @@ describe SearchObject::Plugin::Graphql do
             'fields' => [{
               'args' => [{
                 'name' => 'option_field'
+              }]
+            }]
+          }
+        }
+      )
+    end
+
+    it 'does not override the default camelize option' do
+      schema = define_search_class_and_return_schema do
+        type PostType, null: true
+
+        option('option_field', type: types.String)
+      end
+
+      result = schema.execute <<~GRAPHQL
+        {
+          __type(name: "Query") {
+            name
+            fields {
+              args {
+                name
+              }
+            }
+          }
+        }
+      GRAPHQL
+
+      expect(result.to_h).to eq(
+        'data' => {
+          '__type' => {
+            'name' => 'Query',
+            'fields' => [{
+              'args' => [{
+                'name' => 'optionField'
               }]
             }]
           }
