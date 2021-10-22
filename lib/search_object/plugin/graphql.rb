@@ -30,7 +30,10 @@ module SearchObject
         def option(name, options = {}, &block)
           type = options.fetch(:type) { raise MissingTypeDefinitionError, name }
 
-          argument_options = { required: options[:required] || false }
+          argument_options = options[:additional_argument_options] || {}
+
+          argument_options[:required] = options[:required] || false
+
           argument_options[:camelize] = options[:camelize] if options.include?(:camelize)
           argument_options[:default_value] = options[:default] if options.include?(:default)
           argument_options[:description] = options[:description] if options.include?(:description)
