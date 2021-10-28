@@ -287,12 +287,12 @@ describe SearchObject::Plugin::Graphql do
       expect(result['errors'][0]['message']).to eq("Field 'posts' is missing required arguments: id")
     end
 
-    it 'accepts "additional_argument_options"' do
-      additional_argument_options = {
+    it 'accepts "argument_options"' do
+      argument_options = {
         permission: true
       }
       schema = define_search_class_and_return_schema do
-        option(:id, type: types.String, additional_argument_options: additional_argument_options) do |_scope, value|
+        option(:id, type: types.String, argument_options: argument_options) do |_scope, value|
           [Post.new(value)]
         end
       end
