@@ -2,6 +2,10 @@
 
 ## Version 1.0.1
 
+* __[feature]__ Added `argument_options` to `options` (@wuz)
+
+## Version 1.0.1
+
 * __[fix]__ `camelize` defaults to false when not specified (@haines)
 
 ## Version 1.0.0
