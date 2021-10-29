@@ -116,6 +116,20 @@ class PostResolver < GraphQL::Schema::Resolver
 end
 ```
 
+### Additional Argument Options
+
+Sometimes you need to pass additional options to the graphql argument method.
+
+```ruby
+class PostResolver < GraphQL::Schema::Resolver
+  include SearchObject.module(:graphql)
+
+  scope { Post.all }
+
+  option(:published, type: types.Boolean, argument_options: { pundit_role: :read }) { |scope, value| value ? scope.published : scope.unpublished }
+end
+```
+
 ### Accessing Parent Object
 
 Sometimes you want to scope posts based on parent object, it is accessible as `object` property:

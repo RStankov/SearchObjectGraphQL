@@ -17,7 +17,20 @@ end
 
 describe SearchObject::Plugin::Graphql do
   def define_schema(&block)
+    argument_type = Class.new(GraphQL::Schema::Argument) do
+      def initialize(*args, permission: true, **kwargs, &block)
+        super(*args, **kwargs, &block)
+
+        raise 'No permission' unless permission
+      end
+    end
+
+    field_type = Class.new(GraphQL::Schema::Field) do
+      argument_class argument_type
+    end
+
     query_type = Class.new(GraphQL::Schema::Object) do
+      field_class field_type
       graphql_name 'Query'
 
       instance_eval(&block)
@@ -31,7 +44,16 @@ describe SearchObject::Plugin::Graphql do
   end
 
   def define_search_class(&block)
+    argument_type = Class.new(GraphQL::Schema::Argument) do
+      def initialize(*args, permission: true, **kwargs, &block)
+        super(*args, **kwargs, &block)
+
+        raise 'No permission' unless permission
+      end
+    end
+
     Class.new(GraphQL::Schema::Resolver) do
+      argument_class argument_type
       include SearchObject.module(:graphql)
 
       scope { [] }
@@ -263,6 +285,26 @@ describe SearchObject::Plugin::Graphql do
       result = schema.execute '{ posts { id } }'
 
       expect(result['errors'][0]['message']).to eq("Field 'posts' is missing required arguments: id")
+    end
+
+    it 'accepts "argument_options"' do
+      argument_options = {
+        permission: true
+      }
+      schema = define_search_class_and_return_schema do
+        option(:id, type: types.String, argument_options: argument_options) do |_scope, value|
+          [Post.new(value)]
+        end
+      end
+
+      result = schema.execute '{ posts(id: "2") { id } }'
+
+      expect(result).to eq(
+        'data' => {
+          'posts' => [Post.new('2').to_json]
+        }
+      )
+
     end
 
     it 'accepts description' do
