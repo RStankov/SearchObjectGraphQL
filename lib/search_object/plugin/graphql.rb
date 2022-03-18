@@ -45,6 +45,7 @@ module SearchObject
           super(name, options, &block)
         end
 
+        # NOTE(rstankov): This is removed in GraphQL 2.0.0
         def types
           GraphQL::Define::TypeDefiner.instance
         end

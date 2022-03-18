@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.2
+
+* __[fix]__ Support GraphQL 2.0 gem (@rstankov)
+
 ## Version 1.0.1
 
 * __[feature]__ Added `argument_options` to `options` (@wuz)

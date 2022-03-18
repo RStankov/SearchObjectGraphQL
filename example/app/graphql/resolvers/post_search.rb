@@ -16,12 +16,12 @@ module Resolvers
 
     scope { object.respond_to?(:posts) ? object.posts : Post.all }
 
-    option :id, type: types.String, with: :apply_id_filter
-    option :title, type: types.String, with: :apply_title_filter
-    option :body, type: types.String, with: :apply_body_filter
-    option :categoryId, type: types.String, with: :apply_category_id_filter
-    option :categoryName, type: types.String, with: :apply_category_name_filter
-    option :published, type: types.Boolean, with: :apply_published_filter
+    option :id, type: String, with: :apply_id_filter
+    option :title, type: String, with: :apply_title_filter
+    option :body, type: String, with: :apply_body_filter
+    option :categoryId, type: String, with: :apply_category_id_filter
+    option :categoryName, type: String, with: :apply_category_name_filter
+    option :published, type: Boolean, with: :apply_published_filter
     option :order, type: OrderEnum, default: 'RECENT'
 
     def apply_id_filter(scope, value)

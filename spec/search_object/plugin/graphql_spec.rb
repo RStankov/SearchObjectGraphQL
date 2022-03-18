@@ -92,7 +92,7 @@ describe SearchObject::Plugin::Graphql do
 
       type [post_type], null: 1
 
-      option(:id, type: !types.ID) { |scope, value| scope.select { |p| p.id == value } }
+      option(:id, type: GraphQL::Types::ID) { |scope, value| scope.select { |p| p.id == value } }
     end
 
     schema = define_schema do
@@ -225,7 +225,7 @@ describe SearchObject::Plugin::Graphql do
 
     it 'accepts default type' do
       schema = define_search_class_and_return_schema do
-        option(:id, type: types.String, default: 'default') do |_scope, value|
+        option(:id, type: String, default: 'default') do |_scope, value|
           [Post.new(value)]
         end
       end
@@ -243,7 +243,7 @@ describe SearchObject::Plugin::Graphql do
       schema = define_search_class_and_return_schema do
         type PostType, null: true
 
-        option('option', type: types.String, default: 'default') { [] }
+        option('option', type: String, default: 'default') { [] }
       end
 
       result = schema.execute <<~GRAPHQL
@@ -277,7 +277,7 @@ describe SearchObject::Plugin::Graphql do
 
     it 'accepts "required"' do
       schema = define_search_class_and_return_schema do
-        option(:id, type: types.String, required: true) do |_scope, value|
+        option(:id, type: String, required: true) do |_scope, value|
           [Post.new(value)]
         end
       end
@@ -292,7 +292,7 @@ describe SearchObject::Plugin::Graphql do
         permission: true
       }
       schema = define_search_class_and_return_schema do
-        option(:id, type: types.String, argument_options: argument_options) do |_scope, value|
+        option(:id, type: String, argument_options: argument_options) do |_scope, value|
           [Post.new(value)]
         end
       end
@@ -304,14 +304,13 @@ describe SearchObject::Plugin::Graphql do
           'posts' => [Post.new('2').to_json]
         }
       )
-
     end
 
     it 'accepts description' do
       schema = define_search_class_and_return_schema do
         type PostType, null: true
 
-        option('option', type: types.String, description: 'what this argument does') { [] }
+        option('option', type: String, description: 'what this argument does') { [] }
       end
 
       result = schema.execute <<-SQL
@@ -347,7 +346,7 @@ describe SearchObject::Plugin::Graphql do
       schema = define_search_class_and_return_schema do
         type PostType, null: true
 
-        option('option_field', type: types.String, camelize: false)
+        option('option_field', type: String, camelize: false)
       end
 
       result = schema.execute <<-SQL
@@ -381,7 +380,7 @@ describe SearchObject::Plugin::Graphql do
       schema = define_search_class_and_return_schema do
         type PostType, null: true
 
-        option('option_field', type: types.String)
+        option('option_field', type: String)
       end
 
       result = schema.execute <<~GRAPHQL

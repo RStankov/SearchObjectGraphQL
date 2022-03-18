@@ -99,8 +99,8 @@ class PostResolver < GraphQL::Schema::Resolver
 
   description 'Lists all posts'
 
-  option(:name, type: types.String, description: 'Fuzzy name matching') { ... }
-  option(:published, type: types.Boolean, description: 'Find published/unpublished') { ... }
+  option(:name, type: String, description: 'Fuzzy name matching') { ... }
+  option(:published, type: Boolean, description: 'Find published/unpublished') { ... }
 end
 ```
 
@@ -112,7 +112,7 @@ class PostResolver < GraphQL::Schema::Resolver
 
   scope { Post.all }
 
-  option(:published, type: types.Boolean, default: true) { |scope, value| value ? scope.published : scope.unpublished }
+  option(:published, type: Boolean, default: true) { |scope, value| value ? scope.published : scope.unpublished }
 end
 ```
 
@@ -126,7 +126,7 @@ class PostResolver < GraphQL::Schema::Resolver
 
   scope { Post.all }
 
-  option(:published, type: types.Boolean, argument_options: { pundit_role: :read }) { |scope, value| value ? scope.published : scope.unpublished }
+  option(:published, type: Boolean, argument_options: { pundit_role: :read }) { |scope, value| value ? scope.published : scope.unpublished }
 end
 ```
 

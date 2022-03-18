@@ -14,8 +14,8 @@ module Resolvers
 
     scope { Category.all }
 
-    option :id, type: types.String, with: :apply_id_filter
-    option :name, type: types.String, with: :apply_name_filter
+    option :id, type: String, with: :apply_id_filter
+    option :name, type: String, with: :apply_name_filter
     option :order, type: OrderEnum, default: 'RECENT'
 
     def apply_id_filter(scope, value)
