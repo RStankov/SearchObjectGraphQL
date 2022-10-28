@@ -410,11 +410,11 @@ describe SearchObject::Plugin::Graphql do
       )
     end
 
-    it 'accepts deprecation_reson' do
+    it 'accepts deprecation_reason' do
       schema = define_search_class_and_return_schema do
         type PostType, null: true
 
-        option('option', type: String, deprecation_reson: 'Not in use anymore')
+        option('option', type: String, deprecation_reason: 'Not in use anymore')
       end
 
       result = schema.execute <<-SQL
