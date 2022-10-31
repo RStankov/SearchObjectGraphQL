@@ -1,14 +1,14 @@
 # Changelog
 
-## Version 1.0.3
+## Version 1.0.4
 
 * __[feature]__ Added `deprecation_reason` to `option` (@IgrekYY)
 
-## Version 1.0.2
+## Version 1.0.3
 
 * __[fix]__ Support GraphQL 2.0 gem (@rstankov)
 
-## Version 1.0.1
+## Version 1.0.2
 
 * __[feature]__ Added `argument_options` to `option` (@wuz)
 
