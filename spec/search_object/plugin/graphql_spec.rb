@@ -417,12 +417,13 @@ describe SearchObject::Plugin::Graphql do
         option('option', type: String, deprecation_reason: 'Not in use anymore')
       end
 
+
       result = schema.execute <<-SQL
         {
           __type(name: "Query") {
             name
             fields {
-              args {
+              args(includeDeprecated: false) {
                 name
               }
             }
@@ -430,14 +431,37 @@ describe SearchObject::Plugin::Graphql do
         }
       SQL
 
-      # it will work, but there won't be in schema
+      expect(result.to_h).to eq(
+        'data' => {
+          '__type' => {
+            'name' => 'Query',
+            'fields' => [{
+              'args' => []
+            }]
+          }
+        }
+      )
+
+      result = schema.execute <<-SQL
+        {
+          __type(name: "Query") {
+            name
+            fields {
+              args(includeDeprecated: true) {
+                name
+              }
+            }
+          }
+        }
+      SQL
+
       expect(result.to_h).to eq(
         'data' => {
           '__type' => {
             'name' => 'Query',
             'fields' => [{
               'args' => [{
-                'name' => 'option'
+                'name' => 'option',
               }]
             }]
           }
