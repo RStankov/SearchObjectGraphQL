@@ -6,6 +6,10 @@ AllCops:
     - example/config/**/*
     - search_object.gemspec
 
+  NewCops: disable
+  SuggestExtensions: false
+
+
 # Disables "Line is too long"
 Metrics/LineLength:
   Enabled: false
@@ -54,4 +58,13 @@ Metrics/CyclomaticComplexity:
   Enabled: false
 
 Metrics/PerceivedComplexity:
+  Enabled: false
+
+Style/HashSyntax:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Gemspec/RequiredRubyVersion:
   Enabled: false

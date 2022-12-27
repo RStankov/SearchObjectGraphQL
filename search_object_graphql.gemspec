@@ -21,11 +21,11 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'graphql', '> 1.8'
-  spec.add_dependency 'search_object', '~> 1.2.2'
+  spec.add_dependency 'search_object', '~> 1.2.5'
 
   spec.add_development_dependency 'coveralls'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.8'
-  spec.add_development_dependency 'rubocop', '0.62.0'
-  spec.add_development_dependency 'rubocop-rspec', '1.31.0'
+  spec.add_development_dependency 'rubocop', '1.41.1'
+  spec.add_development_dependency 'rubocop-rspec', '2.16.0'
 end

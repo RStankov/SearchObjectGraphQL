@@ -417,7 +417,6 @@ describe SearchObject::Plugin::Graphql do
         option('option', type: String, deprecation_reason: 'Not in use anymore')
       end
 
-
       result = schema.execute <<-SQL
         {
           __type(name: "Query") {
