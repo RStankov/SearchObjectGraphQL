@@ -6,22 +6,6 @@
 
 [SearchObject](https://github.com/RStankov/SearchObject) plugin for [GraphQL Ruby](https://rmosolgo.github.io/graphql-ruby/).
 
-## Table of Contents
-
-* [Installation](#installation)
-* [Dependencies](#dependencies)
-* [Usage](#usage)
-  * [Example](#example)
-* [Features](#features)
-  * [Custom Types](#custom-types)
-  * [Documentation](#documentation)
-  * [Default Values](#default-values)
-  * [Accessing Parent Object](#accessing-parent-object)
-  * [Enums Support](#enums-support)
-  * [Relay Support](#relay-support)
-* [Contributing](#contributing)
-* [License](#license)
-
 ## Installation
 
 Add this line to your application's Gemfile:
