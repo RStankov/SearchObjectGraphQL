@@ -51,6 +51,10 @@ require 'search_object/plugin/graphql'
 - `SearchObject` >= 1.2
 - `Graphql` >= 1.5
 
+## Changelog
+
+Changes are available in [CHANGELOG.md](https://github.com/RStankov/SearchObjectGraphQL/blob/master/CHANGELOG.md)
+
 ## Usage
 
 Just include the ```SearchObject.module``` and define your search options and their types:
@@ -194,6 +198,20 @@ end
 field :posts, resolver: PostResolver
 ```
 
+## Running tests
+
+Make sure all dependencies are installed with `bundle install`
+
+```
+rake
+```
+
+## Release
+
+```
+rake release
+```
+
 ## Contributing
 
 1. Fork it
@@ -202,6 +220,12 @@ field :posts, resolver: PostResolver
 4. Push to the branch (`git push origin my-new-feature`)
 5. Run the tests (`rake`)
 6. Create new Pull Request
+
+## Authors
+
+* **Radoslav Stankov** - *creator* - [RStankov](https://github.com/RStankov)
+
+See also the list of [contributors](https://github.com/RStankov/SearchObjectGraphQL/contributors) who participated in this project.
 
 ## License
 
