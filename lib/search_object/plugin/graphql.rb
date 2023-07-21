@@ -15,13 +15,15 @@ module SearchObject
       def initialize(filters: {}, object: nil, context: {}, scope: nil, field: nil)
         @object = object
         @context = context
+        @field = field
+
+        @arguments_by_keyword = {}
 
         super filters: filters, scope: scope, field: field
       end
 
-      # NOTE(rstankov): GraphQL::Schema::Resolver interface
-      # Documentation - http://graphql-ruby.org/fields/resolvers.html#using-resolver
-      def resolve_with_support(args = {})
+      # http://graphql-ruby.org/fields/resolvers.html#using-resolver
+      def resolve(args = {})
         self.params = args.to_h
         results
       end
