@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.0.5
+
+* __[fix]__ Use `resolve` instead `resolve_with_support`, which is a private method ([@thayol](https://github.com/thayol))
+
 ## Version 1.0.4
 
 * __[feature]__ Added `deprecation_reason` to `option` ([@IgrekYY](https://github.com/IgrekYY))
