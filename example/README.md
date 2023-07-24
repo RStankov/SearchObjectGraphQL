@@ -20,7 +20,7 @@ rails db:create
 rails db:migrate
 rails db:seed
 
-rails server
+rails server -p 3000
 ```
 
 From there just visit: [localhost:3000/](http://localhost:3000/). This would open [graphiql](https://github.com/graphql/graphiql).
@@ -39,6 +39,7 @@ From there just visit: [localhost:3000/](http://localhost:3000/). This would ope
             node {
               id
               title
+              isPublished
             }
           }
         }
